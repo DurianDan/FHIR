@@ -143,14 +143,22 @@ public class DataDefinitionUtil {
 
     /**
      * Make sure that the given name is valid for use in database statements
-     * @param name
+     * Checks both naming pattern and SQL injection risks
+     * 
+     * @param name the database object name to validate 
      * @return the name confirmed as valid
-     * @throws IllegalArgumentException if the given name is invalid
+     * @throws IllegalArgumentException if the given name is invalid or contains risky characters
      */
     public static String assertValidName(String name) {
         if (name == null || !isValidName(name)) {
             throw new IllegalArgumentException("Invalid SQL object name: '" + name + "'");
         }
+
+        // Check for SQL injection risks
+        if (name.contains(";") || name.contains("--") || name.contains("/*") || name.contains("*/")) {
+            throw new IllegalArgumentException("Name contains invalid characters that pose SQL injection risks");
+        }
+
         return name;
     }
 
